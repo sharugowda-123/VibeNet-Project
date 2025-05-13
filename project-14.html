@@ -1,6 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dynamic Photo Feed</title>
+<body>
+
+<header>📷 My Dynamic Photo Feed</header>
+
+<div class="container">
+  <div class="upload-form">
+    <input type="text" id="username" placeholder="Your name" />
+    <input type="file" id="photo" accept="image/*" />
+    <textarea id="caption" placeholder="Say something about your photo..."></textarea>
+    <button onclick="addPost()">Post Photo</button>
+  </div>
+
+  <div id="feed"></div>
+</div>
+
+<script>
+  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+
+  function savePosts() {
+    localStorage.setItem("posts", JSON.stringify(posts));
+  }
+
+  function addPost() {
+    const name = document.getElementById("username").value.trim();
+    const file = document.getElementById("photo").files[0];
+    const caption = document.getElementById("caption").value.trim();
+
+    if (!name || !file) {
+      alert("Please provide a name and select a photo.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const post = {
+        name: name,
+        img: e.target.result,
+        likes: 0,
+        caption: caption,
+        comments: []
+      };
+
+      posts.unshift(post);
+      savePosts();
+      renderPosts();
+
+      document.getElementById("username").value = "";
+      document.getElementById("photo").value = "";
+      document.getElementById("caption").value = "";
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function likePost(index) {
+    posts[index].likes++;
+    savePosts();
+    renderPosts();
+  }
