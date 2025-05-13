@@ -57,3 +57,24 @@
     savePosts();
     renderPosts();
   }
+   function addComment(index) {
+    const input = document.getElementById(`comment-${index}`);
+    const comment = input.value.trim();
+    if (comment) {
+      posts[index].comments.push(comment);
+      input.value = "";
+      savePosts();
+      renderPosts();
+    }
+  }
+
+  function renderPosts() {
+    const feed = document.getElementById("feed");
+    feed.innerHTML = "";
+
+    posts.forEach((post, i) => {
+      let commentHTML = "";
+      post.comments.forEach(c => {
+        commentHTML += `<div class="comment">${c}</div>`;
+      });
+
