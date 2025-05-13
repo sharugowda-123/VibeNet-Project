@@ -1,6 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dynamic Photo Feed</title>
+ feed.innerHTML += `
+        <div class="post">
+          <div class="user-info">
+            <img src="https://via.placeholder.com/40?text=${post.name[0].toUpperCase()}" alt="avatar" />
+            <span>${post.name}</span>
+          </div>
+
+          <img src="${post.img}" class="post-img" alt="uploaded photo" />
+
+          <div class="actions">
+            <button onclick="likePost(${i})">❤️ Like</button>
+            <button>💬 Comment</button>
+          </div>
+
