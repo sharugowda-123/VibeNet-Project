@@ -11,4 +11,20 @@
             <button onclick="likePost(${i})">❤️ Like</button>
             <button>💬 Comment</button>
           </div>
+ <div class="likes">${post.likes} like${post.likes !== 1 ? "s" : ""}</div>
 
+          <div class="comment-section">
+            ${post.caption ? `<p><em>${post.caption}</em></p>` : ""}
+            ${commentHTML}
+            <div class="comment-box">
+              <input type="text" id="comment-${i}" placeholder="Write a comment..." />
+              <button onclick="addComment(${i})">Post</button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  renderPosts();
+</script>
