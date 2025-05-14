@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -132,3 +133,83 @@
   </style>
 </head>
  
+<body>
+
+<header>📷 My Dynamic Photo Feed</header>
+
+<div class="container">
+  <div class="upload-form">
+    <input type="text" id="username" placeholder="Your name" />
+    <input type="file" id="photo" accept="image/*" />
+    <textarea id="caption" placeholder="Say something about your photo..."></textarea>
+    <button onclick="addPost()">Post Photo</button>
+  </div>
+
+  <div id="feed"></div>
+</div>
+
+<script>
+  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+
+  function savePosts() {
+    localStorage.setItem("posts", JSON.stringify(posts));
+  }
+
+  function addPost() {
+    const name = document.getElementById("username").value.trim();
+    const file = document.getElementById("photo").files[0];
+    const caption = document.getElementById("caption").value.trim();
+
+    if (!name || !file) {
+      alert("Please provide a name and select a photo.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const post = {
+        name: name,
+        img: e.target.result,
+        likes: 0,
+        caption: caption,
+        comments: []
+      };
+
+      posts.unshift(post);
+      savePosts();
+      renderPosts();
+
+      document.getElementById("username").value = "";
+      document.getElementById("photo").value = "";
+      document.getElementById("caption").value = "";
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function likePost(index) {
+    posts[index].likes++;
+    savePosts();
+    renderPosts();
+  }
+   function addComment(index) {
+    const input = document.getElementById(`comment-${index}`);
+    const comment = input.value.trim();
+    if (comment) {
+      posts[index].comments.push(comment);
+      input.value = "";
+      savePosts();
+      renderPosts();
+    }
+  }
+
+  function renderPosts() {
+    const feed = document.getElementById("feed");
+    feed.innerHTML = "";
+
+    posts.forEach((post, i) => {
+      let commentHTML = "";
+      post.comments.forEach(c => {
+        commentHTML += `<div class="comment">${c}</div>`;
+      });
+
