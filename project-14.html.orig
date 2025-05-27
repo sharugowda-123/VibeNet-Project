@@ -1,0 +1,250 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dynamic Photo Feed</title>
+<style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #f4f4f4;
+    }
+
+    header {
+	    background: #333;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      font-size: 22px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 10px;
+    }
+.upload-form {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px #ccc;
+      margin-bottom: 20px;
+    }
+
+    .upload-form input[type="text"],
+    .upload-form input[type="file"],
+    .upload-form textarea {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .upload-form button {
+      width: 100%;
+      padding: 10px;
+      background: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .post {
+      background: #fff;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px #ccc;
+      overflow: hidden;
+    }
+     .user-info {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+    }
+
+    .user-info img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .user-info span {
+      font-weight: bold;
+    }
+
+    .post-img {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+    }
+
+    .actions button {
+      border: none;
+      background: none;
+      font-size: 16px;
+      cursor: pointer;
+    }
+     .likes {
+      padding: 0 10px 10px;
+      color: #555;
+    }
+
+    .comment-section {
+      padding: 0 10px 10px;
+    }
+
+    .comment {
+      background: #f0f0f0;
+      margin-top: 5px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .comment-box {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .comment-box input {
+      flex: 1;
+      padding: 5px;
+      font-size: 14px;
+    }
+
+    .comment-box button {
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+ 
+<body>
+
+<header>📷 My Dynamic Photo Feed</header>
+
+<div class="container">
+  <div class="upload-form">
+    <input type="text" id="username" placeholder="Your name" />
+    <input type="file" id="photo" accept="image/*" />
+    <textarea id="caption" placeholder="Say something about your photo..."></textarea>
+    <button onclick="addPost()">Post Photo</button>
+  </div>
+
+  <div id="feed"></div>
+</div>
+
+<script>
+  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+
+  function savePosts() {
+    localStorage.setItem("posts", JSON.stringify(posts));
+  }
+
+  function addPost() {
+    const name = document.getElementById("username").value.trim();
+    const file = document.getElementById("photo").files[0];
+    const caption = document.getElementById("caption").value.trim();
+
+    if (!name || !file) {
+      alert("Please provide a name and select a photo.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const post = {
+        name: name,
+        img: e.target.result,
+        likes: 0,
+        caption: caption,
+        comments: []
+      };
+
+      posts.unshift(post);
+      savePosts();
+      renderPosts();
+
+      document.getElementById("username").value = "";
+      document.getElementById("photo").value = "";
+      document.getElementById("caption").value = "";
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function likePost(index) {
+    posts[index].likes++;
+    savePosts();
+    renderPosts();
+  }
+   function addComment(index) {
+    const input = document.getElementById(`comment-${index}`);
+    const comment = input.value.trim();
+    if (comment) {
+      posts[index].comments.push(comment);
+      input.value = "";
+      savePosts();
+      renderPosts();
+    }
+  }
+
+  function renderPosts() {
+    const feed = document.getElementById("feed");
+    feed.innerHTML = "";
+
+    posts.forEach((post, i) => {
+      let commentHTML = "";
+      post.comments.forEach(c => {
+        commentHTML += `<div class="comment">${c}</div>`;
+      });
+=======
+ feed.innerHTML += `
+        <div class="post">
+          <div class="user-info">
+            <img src="https://via.placeholder.com/40?text=${post.name[0].toUpperCase()}" alt="avatar" />
+            <span>${post.name}</span>
+          </div>
+
+          <img src="${post.img}" class="post-img" alt="uploaded photo" />
+
+          <div class="actions">
+            <button onclick="likePost(${i})">❤️ Like</button>
+            <button>💬 Comment</button>
+          </div>
+ <div class="likes">${post.likes} like${post.likes !== 1 ? "s" : ""}</div>
+
+          <div class="comment-section">
+            ${post.caption ? `<p><em>${post.caption}</em></p>` : ""}
+            ${commentHTML}
+            <div class="comment-box">
+              <input type="text" id="comment-${i}" placeholder="Write a comment..." />
+              <button onclick="addComment(${i})">Post</button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  renderPosts();
+</script>
+</body>
+</html>
+
+
